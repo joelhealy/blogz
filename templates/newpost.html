@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>Add a Blog Entry</h1>
+    <form method='POST'>
+        <label>
+            Title for your new blog:
+            <input class="blockit" type="text" name="blog_title" value="{{blog_title}}" />
+        </label>
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% for category, message in messages %}
+                {% if category == 'title_error' %}
+                    <span class="blockit error">{{message}}</span>
+                {% endif %}
+            {% endfor %}
+        {% endwith %}
+        <label>
+            Your new blog:
+            <textarea class="blockit" name="body" rows="4" cols="50">{{body}}</textarea>
+        </label>
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% for category, message in messages %}
+                {% if category == 'body_error' %}
+                    <span class="blockit error">{{message}}</span>
+                {% endif %}
+            {% endfor %}
+        {% endwith %}
+        <input type="submit" value="Add Entry" />
+    </form>
+
+{% endblock %}
