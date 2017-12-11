@@ -4,7 +4,7 @@
 
     <h1>Add a Blog Entry</h1>
     <form method='POST'>
-        <label>
+        <label class="blockit">
             Title for your new blog:
             <input class="blockit" type="text" name="blog_title" value="{{blog_title}}" />
         </label>
@@ -15,7 +15,7 @@
                 {% endif %}
             {% endfor %}
         {% endwith %}
-        <label>
+        <label class="blockit">
             Your new blog:
             <textarea class="blockit" name="body" rows="4" cols="50">{{body}}</textarea>
         </label>
