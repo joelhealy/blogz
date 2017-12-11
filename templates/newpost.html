@@ -6,7 +6,8 @@
     <form method='POST'>
         <label class="blockit">
             Title for your new blog:
-            <input class="blockit" type="text" name="blog_title" value="{{blog_title}}" />
+            <input class="blockit" type="text" name="blog_title"
+                   maxlength="120" size="50" value="{{blog_title}}" />
         </label>
         {% with messages = get_flashed_messages(with_categories=True) %}
             {% for category, message in messages %}
@@ -17,7 +18,7 @@
         {% endwith %}
         <label class="blockit">
             Your new blog:
-            <textarea class="blockit" name="body" rows="4" cols="50">{{body}}</textarea>
+            <textarea class="blockit" name="body" rows="8" cols="72">{{body}}</textarea>
         </label>
         {% with messages = get_flashed_messages(with_categories=True) %}
             {% for category, message in messages %}
