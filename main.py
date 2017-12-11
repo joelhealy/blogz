@@ -34,7 +34,7 @@ def display_blogs():
             blog=blog)
     else:
         # request had no query parameters, so display all the blog entries
-        blogs = Blog.query.all()
+        blogs = Blog.query.order_by("id desc").all()
         return render_template('blog.html', title="Main Blog Page",
             blogs=blogs)
 
