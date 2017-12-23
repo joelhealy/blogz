@@ -58,6 +58,41 @@ def display_blogs():
             blogs=blogs)
 
 
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user:
+            if user.password == password:
+                session['username'] = username
+                return redirect('/blog')
+            else:
+                return render_template('login.html',
+                    title="Login Page with password error",
+                    username = username,
+                    password_error = "Password is incorrect")
+        else:
+                return render_template('login.html', title="Login Page with username error",
+                username_error = "This username does not exist")
+
+
+    return render_template('login.html', title="Login Page")
+
+
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        verify_password = request.form['verify_password']
+
+        # TODO - Finish signup page processing
+
+    return render_template('signup.html', title="Signup Page")
+
+
 @app.route('/newpost', methods=['POST', 'GET'])
 def newpost():
 
