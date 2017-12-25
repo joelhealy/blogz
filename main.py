@@ -89,6 +89,35 @@ def signup():
         verify_password = request.form['verify_password']
 
         # TODO - Finish signup page processing
+        username_error = ""
+        password_error = ""
+        verify_password_error = ""
+        if len(username) < 3:
+            username_error = "That's not a valid username"
+        else:
+            num_existing_users = User.query.filter_by(username=username).count()
+            if num_existing_users > 0:
+                username_error = "A user with that username already exists"
+        if len(password) < 3:
+            password_error = "That's not a valid password"
+        if len(verify_password) == 0:
+            verify_password_error = "Passwords don't match"
+        elif password != verify_password:
+            verify_password_error = "Passwords don't match"
+        
+        if username_error or password_error or verify_password_error:
+            return render_template('signup.html',
+                title = "Signup Page with errors",
+                username_error = username_error,
+                password_error = password_error,
+                verify_password_error = verify_password_error)
+        else:
+            # No errors so save new user
+            newuser = User(username, password)
+            db.session.add(newuser)
+            db.session.commit()
+            session['username'] = username
+            return redirect('/newpost')
 
     return render_template('signup.html', title="Signup Page")
 
