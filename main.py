@@ -38,19 +38,44 @@ class User(db.Model):
         return '<User ID:%d>.format(self.id)'
 
 
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'display_blogs', 'signup', 'index']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect('/login')
+
+
+@app.route('/')
+def index():
+    users = User.query.all()
+    return render_template(
+        'index.html',
+        title="Blog Users",
+        users = users)
+
+
 @app.route('/blog')
 def display_blogs():
 
-    if request.args:
-        # request had query parameters, so display individual entry
-        id = int(request.args.get('id'))
-        blog = Blog.query.get(id)
-        return render_template(
-            'blog_entry.html',
-            title="Blog Entry",
-            blog=blog)
+    if 'id' in request.args or 'user' in request.args:
+        # request had valid query parameters
+        if 'id' in request.args:
+            id = int(request.args.get('id'))
+            blog = Blog.query.get(id)
+            return render_template(
+                'blog_entry.html',
+                title="Blog Entry",
+                blog=blog)
+        elif 'user' in request.args:
+            userID = int(request.args.get('user'))
+            owner = User.query.get(userID)
+            blogs = Blog.query.filter_by(owner=owner).all()
+            return render_template(
+                'blog.html',
+                title="Blog Page for Individual Author",
+                blogs=blogs)
     else:
-        # request had no query parameters, so display all the blog entries
+        # request had no valid query parameters, so display all the blog entries
         blogs = Blog.query.order_by("id desc").all()
         return render_template(
             'blog.html',
@@ -88,7 +113,6 @@ def signup():
         password = request.form['password']
         verify_password = request.form['verify_password']
 
-        # TODO - Finish signup page processing
         username_error = ""
         password_error = ""
         verify_password_error = ""
@@ -122,6 +146,12 @@ def signup():
     return render_template('signup.html', title="Signup Page")
 
 
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect('/blog')
+
+
 @app.route('/newpost', methods=['POST', 'GET'])
 def newpost():
 
@@ -136,8 +166,8 @@ def newpost():
             flash('Please enter a body', 'body_error')
             error_free = False
         if error_free:
-            # TODO - get the real owner for the blog entry
-            owner = User.query.first()
+            username = session['username']
+            owner = User.query.filter_by(username=username).first()
             new_blog = Blog(blog_title, body, owner)
             db.session.add(new_blog)
             db.session.commit()
